@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cadastro de Médicos</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+  </head>
+  
+  <body>
+    <div class="container mt-5">
+      <h2 class="mb-4">Cadastro de Médicos</h2>
+      
+      <form action="registro-confirmacao-medico.html" method="POST" onsubmit="window.location.href='registro-confirmacao-medico.html'; return false;">
+        <div class="row mb-3">
+          <div class="col-md-6">
+            <label for="nome" class="form-label">Nome Completo</label>
+            <input type="text" class="form-control" id="nome" required>
+          </div>
+          
+          <div class="col-md-6">
+            <label for="crm" class="form-label">CRM</label>
+            <input type="text" class="form-control" id="crm" required>
+          </div>
+        </div>
+
+        <div class="row mb-3">
+          <div class="col-md-6">
+            <label for="email" class="form-label">Email</label>
+            <input type="email" class="form-control" id="email" required>
+          </div>
+          
+          <div class="col-md-6">
+            <label for="telefone" class="form-label">Telefone</label>
+            <div class="input-group">
+                <select class="form-select" id="countryCode" style="max-width: 200px;">
+                    <option value="+55">🇧🇷 Brasil (+55)</option>
+                    <!--
+                    <option value="+1">🇺🇸 USA (+1)</option>
+                    <option value="+351">🇵🇹 Portugal (+351)</option>
+                    <option value="+34">🇪🇸 España (+34)</option>
+                    <option value="+44">🇬🇧 UK (+44)</option>
+                    <option value="+33">🇫🇷 France (+33)</option>
+                    -->
+                </select>
+                <input type="tel" class="form-control" id="telefone" required>
+            </div>
+          </div>
+        </div>
+
+        <div class="row mb-3">
+          <div class="col-md-6">
+            <label for="especialidade" class="form-label">Especialidade</label>
+            <select class="form-select" id="especialidade" required>
+              <option value="">Selecione...</option>
+              <option value="cardiologia">Cardiologia</option>
+              <option value="dermatologia">Dermatologia</option>
+              <option value="ginecologia">Ginecologia</option>
+              <option value="ortopedia">Ortopedia</option>
+              <option value="pediatria">Pediatria</option>
+              <option value="psiquiatria">Psiquiatria</option>
+            </select>
+          </div>
+          
+          <div class="col-md-6">
+            <label for="valorConsulta" class="form-label">Valor da Consulta (R$)</label>
+            <input type="number" class="form-control" id="valorConsulta" min="0" step="0.01" required>
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label for="disponibilidade" class="form-label">Disponibilidade de Horários</label>
+          <div class="row g-3">
+            <div class="col-md-4">
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="segunda">
+                <label class="form-check-label" for="segunda">Segunda-feira</label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="terca">
+                <label class="form-check-label" for="terca">Terça-feira</label>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="quarta">
+                <label class="form-check-label" for="quarta">Quarta-feira</label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="quinta">
+                <label class="form-check-label" for="quinta">Quinta-feira</label>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="sexta">
+                <label class="form-check-label" for="sexta">Sexta-feira</label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="sabado">
+                <label class="form-check-label" for="sabado">Sábado</label>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label for="observacoes" class="form-label">Observações Adicionais</label>
+          <textarea class="form-control" id="observacoes" rows="3"></textarea>
+        </div>
+
+        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+          <button type="submit" class="btn btn-primary">Cadastrar Médico</button>
+          <button type="reset" class="btn btn-secondary">Limpar</button>
+        </div>
+      </form>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
+    <script>
+        $(document).ready(function(){
+            $('#telefone').mask('(00)-00000-0000');
+            $('#crm').mask('000000');
+            
+            $('#countryCode').change(function(){
+                let selectedCountry = $(this).val();
+                if(selectedCountry === '+55') {
+                    $('#telefone').mask('(00)-00000-0000');
+                } else {
+                    $('#telefone').mask('(000)-0000-0000');
+                }
+            });
+        });
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+  </body>
+</html>
