@@ -5,9 +5,12 @@
 - Visual Studio Code
 - PHP 8.3.13 (Laravel Herd)
 
-# OBS (consultaCrud.php):
-- Arruma ai ó: $sql = "select * from agendamentos";
+# Modificações do PHP (consultaCrud.php):
+- $sql = "select * from agendamentos";
 - Removido validação de 2 dias de diferença
+
+# Modificações do PHP (medicoCrud.php):
+-  $sql = "UPDATE medico...
 
 # CRIAÇÃO DO BANCO:
 ```SQL

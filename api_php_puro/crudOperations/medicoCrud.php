@@ -148,11 +148,11 @@ function updateMedico($data, $id)
   }
 
   try {
-    $sql = "UPDATE paciente set crm=:crm, nome=:nome, especialidadeId=:especialidadeId where id=:id";
+    $sql = "UPDATE medico set crm=:crm, nome=:nome, especialidadeId=:especialidadeId where id=:id";
     $stmt = $pdo->prepare($sql);
     $stmt->bindParam(':nome', $data['nome']);
     $stmt->bindParam(':crm', $data['crm']);
-    $stmt->bindParam(':especialidadeId', $data['especilidade']);
+    $stmt->bindParam(':especialidadeId', $data['especialidade']);
     $stmt->bindParam(':id', $id);
 
     if ($stmt->execute()) {

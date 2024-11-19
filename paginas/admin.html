@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Panel - Clinica Sol</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+</head>
+<body>
+    <div class="container mt-5">
+        <h2 class="mb-4">Painel Administrativo</h2>
+
+        <!-- Patients Section -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h3>Pacientes</h3>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table" id="patientsTable">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nome</th>
+                                <th>Endereço</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Doctors Section -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h3>Médicos</h3>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table" id="doctorsTable">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nome</th>
+                                <th>CRM</th>
+                                <th>Especialidade</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Appointments Section -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h3>Consultas</h3>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table" id="appointmentsTable">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Paciente</th>
+                                <th>Médico</th>
+                                <th>Data</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="modal fade" id="editModal" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Editar</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="editForm">
+                            <div class="mb-3" id="editFormFields"></div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="button" class="btn btn-primary" id="saveEdit">Salvar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Load all data when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            loadPatients();
+            loadDoctors();
+            loadAppointments();
+        });
+          // Load Patients
+          async function loadPatients() {
+              try {
+                  const response = await fetch('http://localhost:8000/api/pacientes');
+                  const patients = await response.json();
+                  console.log('Patients data:', patients); // Add this line
+                  const tbody = document.querySelector('#patientsTable tbody');
+                  tbody.innerHTML = patients.map(patient => `
+                      <tr>
+                          <td>${patient.id}</td>
+                          <td>${patient.nome}</td>
+                          <td>${patient.endereco}</td>
+                          <td>
+                              <button class="btn btn-sm btn-danger" onclick="deletePatient(${patient.id})">
+                                  <i class="bi bi-trash"></i>
+                              </button>
+                              <button class="btn btn-sm btn-primary" onclick="editPatient(${patient.id})">
+                                  <i class="bi bi-pencil"></i>
+                              </button>
+                          </td>
+                      </tr>
+                  `).join('');
+              } catch (error) {
+                  console.error('Error loading patients:', error);
+              }
+          }
+
+        // Load Doctors
+        async function loadDoctors() {
+            try {
+                const response = await fetch('http://localhost:8000/api/medicos');
+                const doctors = await response.json();
+                const tbody = document.querySelector('#doctorsTable tbody');
+                tbody.innerHTML = doctors.map(doctor => `
+                    <tr>
+                        <td>${doctor.id}</td>
+                        <td>${doctor.nome}</td>
+                        <td>${doctor.crm}</td>
+                        <td>${doctor.especialidadeId}</td>
+                        <td>
+                            <button class="btn btn-sm btn-danger" onclick="deleteDoctor(${doctor.id})">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                            <button class="btn btn-sm btn-primary" onclick="editDoctor(${doctor.id})">
+                                <i class="bi bi-pencil"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `).join('');
+            } catch (error) {
+                console.error('Error loading doctors:', error);
+            }
+        }
+
+        // Load Appointments
+        async function loadAppointments() {
+            try {
+                const response = await fetch('http://localhost:8000/api/consultas');
+                const appointments = await response.json();
+                const tbody = document.querySelector('#appointmentsTable tbody');
+                tbody.innerHTML = appointments.map(appointment => `
+                    <tr>
+                        <td>${appointment.id}</td>
+                        <td>${appointment.pacienteId}</td>
+                        <td>${appointment.medicoId}</td>
+                        <td>${new Date(appointment.dataConsulta).toLocaleString()}</td>
+                        <td>
+                            <button class="btn btn-sm btn-danger" onclick="deleteAppointment(${appointment.id})">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                            <button class="btn btn-sm btn-primary" onclick="editAppointment(${appointment.id})">
+                                <i class="bi bi-pencil"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `).join('');
+            } catch (error) {
+                console.error('Error loading appointments:', error);
+            }
+        }
+
+        // Delete functions
+        async function deletePatient(id) {
+            if (confirm('Tem certeza que deseja excluir este paciente?')) {
+                try {
+                    await fetch(`http://localhost:8000/api/pacientes/${id}`, { method: 'DELETE' });
+                    loadPatients();
+                } catch (error) {
+                    console.error('Error deleting patient:', error);
+                }
+            }
+        }
+
+        async function deleteDoctor(id) {
+            if (confirm('Tem certeza que deseja excluir este médico?')) {
+                try {
+                    await fetch(`http://localhost:8000/api/medicos/${id}`, { method: 'DELETE' });
+                    loadDoctors();
+                } catch (error) {
+                    console.error('Error deleting doctor:', error);
+                }
+            }
+        }
+
+        async function deleteAppointment(id) {
+            if (confirm('Tem certeza que deseja excluir esta consulta?')) {
+                try {
+                    await fetch(`http://localhost:8000/api/consultas/${id}`, { method: 'DELETE' });
+                    loadAppointments();
+                } catch (error) {
+                    console.error('Error deleting appointment:', error);
+                }
+            }
+        }
+
+        function editPatient(id) {
+            const modal = new bootstrap.Modal(document.getElementById('editModal'));
+            const fields = document.getElementById('editFormFields');
+            fields.innerHTML = `
+                <label class="form-label">Nome</label>
+                <input type="text" class="form-control" id="editName">
+                <label class="form-label mt-2">Endereço</label>
+                <input type="text" class="form-control" id="editEndereco">
+            `;
+
+            document.getElementById('saveEdit').onclick = async () => {
+                const nome = document.getElementById('editName').value;
+                const endereco = document.getElementById('editEndereco').value;
+                try {
+                    await fetch(`http://localhost:8000/api/pacientes/${id}`, {
+                        method: 'PUT',
+                        body: JSON.stringify({ nome, endereco }),
+                        headers: { 'Content-Type': 'application/json' }
+                    });
+                    loadPatients();
+                    modal.hide();
+                } catch (error) {
+                    console.error('Error updating patient:', error);
+                }
+            };
+            modal.show();
+        }
+
+        function editDoctor(id) {
+            const modal = new bootstrap.Modal(document.getElementById('editModal'));
+            const fields = document.getElementById('editFormFields');
+            fields.innerHTML = `
+                <label class="form-label">Nome</label>
+                <input type="text" class="form-control" id="editName">
+                <label class="form-label mt-2">CRM</label>
+                <input type="number" class="form-control" id="editCrm">
+                <label class="form-label mt-2">Especialidade</label>
+                <select class="form-select" id="editEspecialidade">
+                    <option value="1">Cardiologia</option>
+                    <option value="2">Dermatologia</option>
+                    <option value="3">Ginecologia</option>
+                    <option value="4">Oftamologista</option>
+                    <option value="5">Clínico Geral</option>
+                    <option value="6">Pediatra</option>
+                </select>
+            `;
+
+            document.getElementById('saveEdit').onclick = async () => {
+                const medicoData = {
+                    nome: document.getElementById('editName').value,
+                    crm: parseInt(document.getElementById('editCrm').value),
+                    especialidade: parseInt(document.getElementById('editEspecialidade').value)
+                };
+
+                console.log('Sending data:', medicoData);
+
+                try {
+                    const response = await fetch(`http://localhost:8000/api/medicos/${id}`, {
+                        method: 'PUT',
+                        headers: {
+                            'Accept': 'application/json',
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(medicoData)
+                    });
+                    console.log('Response:', response);
+                    loadDoctors();
+                    modal.hide();
+                } catch (error) {
+                    console.error('Error updating doctor:', error);
+                }
+            };
+            modal.show();
+            }
+
+        function editAppointment(id) {
+            const modal = new bootstrap.Modal(document.getElementById('editModal'));
+            const fields = document.getElementById('editFormFields');
+            fields.innerHTML = `
+                <label class="form-label">Data da Consulta</label>
+                <input type="datetime-local" class="form-control" id="editDate">
+                <label class="form-label mt-2">ID do Paciente</label>
+                <input type="text" class="form-control" id="editPacienteId">
+                <label class="form-label mt-2">ID do Médico</label>
+                <input type="text" class="form-control" id="editMedicoId">
+            `;
+
+            document.getElementById('saveEdit').onclick = async () => {
+                const data = document.getElementById('editDate').value;
+                const pacienteId = document.getElementById('editPacienteId').value;
+                const medicoId = document.getElementById('editMedicoId').value;
+                try {
+                    await fetch(`http://localhost:8000/api/consultas/${id}`, {
+                        method: 'PUT',
+                        body: JSON.stringify({ data, pacienteId, medicoId }),
+                        headers: { 'Content-Type': 'application/json' }
+                    });
+                    loadAppointments();
+                    modal.hide();
+                } catch (error) {
+                    console.error('Error updating appointment:', error);
+                }
+            };
+            modal.show();
+        }
+    </script>
+</body>
+</html>

@@ -4,7 +4,7 @@ function getConnection()
 {
 
   $host = '127.0.0.1';
-  $dbname = 'dbtest';
+  $dbname = 'dbTeste';
   $username = 'root';
   $password = 'root';
 

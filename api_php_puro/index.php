@@ -22,11 +22,11 @@ if ($uri[1] !== 'api' || !isset($uri[2])) {
 }
 
 if ($uri[2] === 'pacientes' && $_SERVER['REQUEST_METHOD'] === 'GET') {
-
-  if ($uri[3]) {
-    getPacienteById($uri[3]);
+  
+  if (isset($uri[3])) {
+      getPacienteById($uri[3]);
   } else {
-    getAllPacientes();
+      getAllPacientes();
   }
 } elseif ($uri[2] === 'pacientes' && $_SERVER['REQUEST_METHOD'] === 'POST') {
 
@@ -85,4 +85,12 @@ if ($uri[2] === 'pacientes' && $_SERVER['REQUEST_METHOD'] === 'GET') {
   updateConsulta($input, $uri[3]);
 } else {
   header("HTTP/1.1 405 Method Not Allowed");
+}
+
+error_reporting(E_ALL);
+ini_set('display_errors', 0);
+
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    header("HTTP/1.1 200 OK");
+    exit();
 }
